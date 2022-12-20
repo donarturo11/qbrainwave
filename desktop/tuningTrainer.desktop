@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=qbrainwave
+Comment=Mindwave software for QT
+Exec=qbrainwave
+Icon=qbrainwave-icon
+Categories=Audio;AudioVideo;X-Jack;Qt;
