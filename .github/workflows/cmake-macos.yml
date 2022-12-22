@@ -26,7 +26,6 @@ jobs:
       run: |
            uname -m
            ls /usr/local
-    - name: Install Rosetta2
     - name: Install dependencies
       run: |
            brew update
