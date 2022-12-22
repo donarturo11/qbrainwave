@@ -4,6 +4,7 @@ on:
   push:
     branches:
        - main
+       - ci-macos
   pull_request:
     branches: [ main ]
 
@@ -29,8 +30,13 @@ jobs:
     - name: Install dependencies
       run: |
            brew update
-           brew install qt@6 tree cmake extra-cmake-modules
-           tree --charset ascii /usr/local/Cellar/qt/ > ~/qt-tree.txt
+           brew install tree cmake extra-cmake-modules
+    - name: Install QT 6
+      run: |
+           brew install --tag=monterey qt@6
+           brew install --tag=arm64_monterey qt@6
+           ls -lah /usr/local/Cellar/qt* >> ~/ls-cellar.txt
+           tree --charset ascii /usr/local/Cellar/qt/ >> ~/qt-tree.txt
            
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -65,6 +71,7 @@ jobs:
            mkdir artifacts
            cp -Rv qbrainwave.app artifacts/qbrainwave.app
            cp ~/qt-tree.txt artifacts
+           cp ~/ls-cellar.txt artifacts
 
 
     - name: Upload tuningTrainer-mac
