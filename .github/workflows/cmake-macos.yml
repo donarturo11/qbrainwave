@@ -26,15 +26,15 @@ jobs:
       run: |
            uname -m
            ls /usr/local
-
+    - name: Install Rosetta2
     - name: Install dependencies
       run: |
            brew update
            brew install tree cmake extra-cmake-modules
     - name: Install QT 6
       run: |
-           brew unbottled --tag=monterey qt@6
-           brew unbottled --tag=arm64_monterey qt@6
+           brew install qt@6
+           arch -arm64 brew install qt@6 || echo "No such Arch ARM"
            ls -lah /usr/local/Cellar/qt* >> ~/ls-cellar.txt
            tree --charset ascii /usr/local/Cellar/qt/ >> ~/qt-tree.txt
            
