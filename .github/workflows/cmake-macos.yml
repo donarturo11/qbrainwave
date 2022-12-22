@@ -33,8 +33,8 @@ jobs:
            brew install tree cmake extra-cmake-modules
     - name: Install QT 6
       run: |
-           brew install --tag=monterey qt@6
-           brew install --tag=arm64_monterey qt@6
+           brew unbottled --tag=monterey qt@6
+           brew unbottled --tag=arm64_monterey qt@6
            ls -lah /usr/local/Cellar/qt* >> ~/ls-cellar.txt
            tree --charset ascii /usr/local/Cellar/qt/ >> ~/qt-tree.txt
            
