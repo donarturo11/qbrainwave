@@ -30,13 +30,16 @@ jobs:
       run: |
            brew update
            brew install tree cmake extra-cmake-modules
-    - name: Install QT 6
+    - name: Install QT 6 x86_64
       run: |
            brew install qt@6
+    - name: Install QT 6 ARM64
+      run: |
            arch -arm64 brew install qt@6 || echo "No such Arch ARM"
+    - name: Check Cellar
+      run: |
            ls -lah /usr/local/Cellar/qt* >> ~/ls-cellar.txt
            tree --charset ascii /usr/local/Cellar/qt/ >> ~/qt-tree.txt
-           
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
