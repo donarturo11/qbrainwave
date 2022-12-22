@@ -30,6 +30,7 @@ jobs:
       run: |
            brew update
            brew install tree cmake extra-cmake-modules
+           rm -Rfv /usr/local/bin/2to3
     - name: Install QT 6 x86_64
       run: |
            brew install qt@6
