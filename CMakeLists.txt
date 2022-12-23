@@ -67,6 +67,44 @@ install(TARGETS ${PROJECT_NAME}
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
+### MINGW - FILES REQUIRED TO RUN ###
+if(MINGW)
+    install( FILES
+        $ENV{MSYSTEM_PREFIX}/bin/libbrotlicommon.dll
+        $ENV{MSYSTEM_PREFIX}/bin/libbrotlidec.dll
+        $ENV{MSYSTEM_PREFIX}/bin/libbz2-1.dll
+        $ENV{MSYSTEM_PREFIX}/bin/libdouble-conversion.dll
+        $ENV{MSYSTEM_PREFIX}bin/libfreetype-6.dll
+        $ENV{MSYSTEM_PREFIX}bin/libgcc_s_seh-1.dll
+        $ENV{MSYSTEM_PREFIX}/bin/libglib-2.0-0.dll
+        $ENV{MSYSTEM_PREFIX}/bin/libgraphite2.dll
+        $ENV{MSYSTEM_PREFIX}/bin/libharfbuzz-0.dll
+        $ENV{MSYSTEM_PREFIX}/bin/libiconv-2.dll
+        $ENV{MSYSTEM_PREFIX}/bin/libicudt69.dll
+        $ENV{MSYSTEM_PREFIX}/bin/libicuin69.dll
+        $ENV{MSYSTEM_PREFIX}/bin/libicuuc69.dll
+        $ENV{MSYSTEM_PREFIX}/bin/libintl-8.dll
+        $ENV{MSYSTEM_PREFIX}/bin/libmd4c.dll
+        $ENV{MSYSTEM_PREFIX}/bin/libpcre-1.dll
+        $ENV{MSYSTEM_PREFIX}/bin/libpcre2-16-0.dll
+        $ENV{MSYSTEM_PREFIX}/bin/libpng16-16.dll
+        $ENV{MSYSTEM_PREFIX}/bin/libstdc++-6.dll
+        $ENV{MSYSTEM_PREFIX}/bin/libwinpthread-1.dll
+        $ENV{MSYSTEM_PREFIX}/bin/libzstd.dll
+        $ENV{MSYSTEM_PREFIX}/bin/zlib1.dll
+    DESTINATION ${PROJECT_NAME})
+    install( FILES
+        $ENV{MSYSTEM_PREFIX}/bin/Qt5Core.dll
+        $ENV{MSYSTEM_PREFIX}/bin/Qt5Gui.dll
+        $ENV{MSYSTEM_PREFIX}/bin/Qt5Widgets.dll
+        DESTINATION ${PROJECT_NAME})
+    install( DIRECTORY
+        $ENV{MSYSTEM_PREFIX}/share/qt5/plugins/platforms
+        $ENV{MSYSTEM_PREFIX}/share/qt5/plugins/styles
+        DESTINATION ${PROJECT_NAME})
+endif()
+### END MINGW ###
+
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(${PROJECT_NAME})
 endif()
