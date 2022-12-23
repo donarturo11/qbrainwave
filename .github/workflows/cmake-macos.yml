@@ -62,6 +62,7 @@ jobs:
       run: |
            cd ${{github.workspace}}/build
            $(brew --prefix qt6)/bin/macdeployqt qbrainwave.app || echo "Macdeploy FAILED"
+           codesign -dv --verbose=4 qbrainwave.app || echo "Codesign FAILED"
            tree --charset ascii .
            
     - name: Prepare Artifact
