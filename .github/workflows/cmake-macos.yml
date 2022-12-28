@@ -52,7 +52,7 @@ jobs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: |
            cmake -B ${{github.workspace}}/build-arm64 \
-                 -DQt6_DIR=~/brew-arm64/Qt@6/*/lib/cmake/Qt6 \
+                 -DQt6_DIR=~/brew-arm64/Qt/6*/lib/cmake/Qt6 \
                  -DAUTOMOC_EXECUTABLE=$(brew --prefix qt6)/share/qt/libexec/moc \
                  -DAUTOUIC_EXECUTABLE=$(brew --prefix qt6)/share/qt/libexec/uic \
                  -DAUTORCC_EXECUTABLE=$(brew --prefix qt6)/share/qt/libexec/rcc \
