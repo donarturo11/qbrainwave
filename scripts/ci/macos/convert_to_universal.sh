@@ -13,7 +13,7 @@ makeUniversal() {
 mimetype=$(file -b --mime-type $1)
 noPrefixPath="${1#arm64/}"
 if [ "${mimetype}" = "application/x-mach-binary" ]; then
-    lipo x86_64/${noPrefixPath} arm64/${noPrefixPath} -create universal/${noPrefixPath}
+    lipo x86_64/${noPrefixPath} arm64/${noPrefixPath} -create -output universal/${noPrefixPath}
 elif [ "${mimetype}" = "inode/directory" ]; then
     mkdir -p universal/${noPrefixPath}
 else
