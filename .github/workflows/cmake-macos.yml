@@ -26,13 +26,13 @@ jobs:
       run: |
            mkdir -p ~/brew-mod/{x86_64,arm64}
            brew fetch --force --bottle-tag=monterey --deps qt@6
-           for i in $(brew --cache)/downloads/*x86_64*
+           for i in $(brew --cache)/downloads/*.tar.gz
            do 
            tar -vxzf $i -C ~/brew-mod/x86_64
            rm $i
            done
            brew fetch --force --bottle-tag=arm64_monterey --deps qt@6
-           for i in $(brew --cache)/downloads/*arm64*
+           for i in $(brew --cache)/downloads/*.tar.gz
            do 
            tar -vxzf $i -C ~/brew-mod/arm64
            rm $i
