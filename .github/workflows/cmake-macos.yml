@@ -25,61 +25,76 @@ jobs:
     - name: Install dependencies
       run: |
            brew install tree cmake extra-cmake-modules
+           brew install pcre2 harfbuzz freetype
+           brew install cmake ninja python
+           brew install --build-from-source llvm
 
-    - name: Install QT 6 x86_64
+
+    - name: Prepare QT
       run: |
-           brew install qt@6
-    - name: Install QT 6 ARM64
-      run: |
-           brew fetch --force --bottle-tag=arm64_monterey --deps qt@6
-           mkdir ~/brew-arm64
-           for i in $(brew --cache)/downloads/*arm64*; do tar -xvzf $i -C ~/brew-arm64; done
-           ls -lah ~/brew-arm64
-           ls -lah ~/brew-arm64/qt* || echo "FAIL"
+           cd ~
+           git clone git://code.qt.io/qt/qt5.git qt6
+           cd qt6
+           git checkout 6.2.4
+           ./init-repository
+           cd ..
+           mkdir qt6-release
+           cd qt6-release
+           ../qt6/configure \
+               -release \
+               -prefix ./qtbase \
+               -nomake examples \
+               -nomake tests \
+               QMAKE_APPLE_DEVICE_ARCHS=arm64;x86_64 \
+               -opensource \
+               -confirm-license \
+               -skip qt3d \
+               -skip qtwebengine
+
 
     - name: Configure CMake x86_64
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: |
-           cmake -B ${{github.workspace}}/build-x86_64 \
-                 -DQt6_DIR=$(brew --prefix qt6)/lib/cmake/Qt6 \
+           cmake -B ${{github.workspace}}/build \
+                 -DCMAKE_PREFIX_PATH=~/qt6-release;$(brew --prefix llvm) \
                  -DCMAKE_INSTALL_PREFIX=qbrainwave.app \
                  -DCMAKE_OSX_ARCHITECTURES="x86_64" \
                  -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} 
       
-    - name: Configure CMake ARM
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: |
-           cmake -B ${{github.workspace}}/build-arm64 \
-                 -DQt6_DIR=~/brew-arm64/Qt/6*/lib/cmake/Qt6 \
-                 -DAUTOMOC_EXECUTABLE=$(brew --prefix qt6)/share/qt/libexec/moc \
-                 -DAUTOUIC_EXECUTABLE=$(brew --prefix qt6)/share/qt/libexec/uic \
-                 -DAUTORCC_EXECUTABLE=$(brew --prefix qt6)/share/qt/libexec/rcc \
-                 -DCMAKE_INSTALL_PREFIX=tuningTrainer.app \
-                 -DCMAKE_OSX_ARCHITECTURES="arm64" \
-                 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} || echo "CMake ARM64 failed"
+#    - name: Configure CMake ARM
+#      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+#      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+#      run: |
+#           cmake -B ${{github.workspace}}/build-arm64 \
+#                 -DQt6_DIR=~/brew-arm64/Qt/6*/lib/cmake/Qt6 \
+#                 -DAUTOMOC_EXECUTABLE=$(brew --prefix qt6)/share/qt/libexec/moc \
+#                 -DAUTOUIC_EXECUTABLE=$(brew --prefix qt6)/share/qt/libexec/uic \
+#                 -DAUTORCC_EXECUTABLE=$(brew --prefix qt6)/share/qt/libexec/rcc \
+#                 -DCMAKE_INSTALL_PREFIX=tuningTrainer.app \
+#                 -DCMAKE_OSX_ARCHITECTURES="arm64" \
+#                 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} || echo "CMake ARM64 failed"
     
     - name: Build x86_64
       # Build your program with the given configuration
       run: |
            echo "Github workspace=${{github.workspace}}"
            echo "PWD=${PWD}"
-           cd ${{github.workspace}}/build-x86_64
+           cd ${{github.workspace}}/build
            make
 
-    - name: Build ARM
-      # Build your program with the given configuration
-      run: |
-           echo "Github workspace=${{github.workspace}}"
-           echo "PWD=${PWD}"
-           cd ${{github.workspace}}/build-arm64
-           make
+#    - name: Build ARM
+#      # Build your program with the given configuration
+#      run: |
+#           echo "Github workspace=${{github.workspace}}"
+#           echo "PWD=${PWD}"
+#           cd ${{github.workspace}}/build-arm64
+#           make
     
     - name: Build Package
       run: |
-           cd ${{github.workspace}}/build-x86_64
-           $(brew --prefix qt6)/bin/macdeployqt qbrainwave.app || echo "Macdeploy FAILED"
+           cd ${{github.workspace}}/build
+           ~/qt6-release/bin/macdeployqt qbrainwave.app || echo "Macdeploy FAILED"
            tree --charset ascii .
            
     - name: Prepare Artifact
