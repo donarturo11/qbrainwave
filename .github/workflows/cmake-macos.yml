@@ -27,8 +27,6 @@ jobs:
            brew install tree cmake extra-cmake-modules
            brew install pcre2 harfbuzz freetype
            brew install cmake ninja python
-           brew install --build-from-source llvm
-
 
     - name: Prepare QT
       run: |
@@ -57,7 +55,7 @@ jobs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: |
            cmake -B ${{github.workspace}}/build \
-                 -DCMAKE_PREFIX_PATH=~/qt6-release;$(brew --prefix llvm) \
+                 -DCMAKE_PREFIX_PATH=~/qt6-release \
                  -DCMAKE_INSTALL_PREFIX=qbrainwave.app \
                  -DCMAKE_OSX_ARCHITECTURES="x86_64" \
                  -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} 
