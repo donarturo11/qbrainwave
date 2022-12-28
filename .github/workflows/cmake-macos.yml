@@ -22,13 +22,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Print system info
-      run: |
-           uname -m
-           ls /usr/local
     - name: Install dependencies
       run: |
-           brew update
            brew install tree cmake extra-cmake-modules
 
     - name: Install QT 6 x86_64
@@ -36,32 +31,52 @@ jobs:
            brew install qt@6
     - name: Install QT 6 ARM64
       run: |
-           arch -arm64 brew install qt@6 || echo "No such Arch ARM"
-    - name: Check Cellar
-      run: |
-           ls -lah /usr/local/Cellar/qt* >> ~/ls-cellar.txt
-           tree --charset ascii /usr/local/Cellar/qt/ >> ~/qt-tree.txt
-    - name: Configure CMake
+           brew fetch --force --bottle-tag=arm64_monterey --deps qt@6
+           mkdir ~/brew-arm64
+           for i in $(brew --cache)/downloads/*arm64*; do tar -xvzf $i -C ~/brew-arm64; done
+           ls -lah ~/brew-arm64
+           ls -lah ~/brew-arm64/qt* || echo "FAIL"
+
+    - name: Configure CMake x86_64
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: |
-           cmake -B ${{github.workspace}}/build \
+           cmake -B ${{github.workspace}}/build-x86_64 \
                  -DQt6_DIR=$(brew --prefix qt6)/lib/cmake/Qt6 \
                  -DCMAKE_INSTALL_PREFIX=qbrainwave.app \
                  -DCMAKE_OSX_ARCHITECTURES="x86_64" \
                  -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} 
-
-    - name: Build
+      
+      - name: Configure CMake for ARM
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: |
+           cmake -B ${{github.workspace}}/build-arm64 \
+                 -DQt5_DIR=~/brew-arm64/Qt@6/*/lib/cmake/Qt6 \
+                 -DAUTOMOC_EXECUTABLE=$(brew --prefix qt6)/bin/moc \
+                 -DCMAKE_INSTALL_PREFIX=tuningTrainer.app \
+                 -DCMAKE_OSX_ARCHITECTURES="arm64" \
+                 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} || echo "CMake ARM64 failed"
+    
+    - name: Build x86_64
       # Build your program with the given configuration
       run: |
            echo "Github workspace=${{github.workspace}}"
            echo "PWD=${PWD}"
-           cd ${{github.workspace}}/build
+           cd ${{github.workspace}}/build-x86_64
+           make
+
+    - name: Build ARM
+      # Build your program with the given configuration
+      run: |
+           echo "Github workspace=${{github.workspace}}"
+           echo "PWD=${PWD}"
+           cd ${{github.workspace}}/build-arm64
            make
     
     - name: Build Package
       run: |
-           cd ${{github.workspace}}/build
+           cd ${{github.workspace}}/build-x86_64
            $(brew --prefix qt6)/bin/macdeployqt qbrainwave.app || echo "Macdeploy FAILED"
            tree --charset ascii .
            
@@ -73,8 +88,6 @@ jobs:
            fi
            mkdir artifacts
            cp -Rv qbrainwave.app artifacts/qbrainwave.app
-           cp ~/qt-tree.txt artifacts
-           cp ~/ls-cellar.txt artifacts
 
 
     - name: Upload tuningTrainer-mac
