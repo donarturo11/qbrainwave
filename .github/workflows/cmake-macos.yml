@@ -52,8 +52,10 @@ jobs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: |
            cmake -B ${{github.workspace}}/build-arm64 \
-                 -DQt5_DIR=~/brew-arm64/Qt@6/*/lib/cmake/Qt6 \
-                 -DAUTOMOC_EXECUTABLE=$(brew --prefix qt6)/bin/moc \
+                 -DQt6_DIR=~/brew-arm64/Qt@6/*/lib/cmake/Qt6 \
+                 -DAUTOMOC_EXECUTABLE=$(brew --prefix qt6)/share/qt/libexec/moc \
+                 -DAUTOUIC_EXECUTABLE=$(brew --prefix qt6)/share/qt/libexec/uic \
+                 -DAUTORCC_EXECUTABLE=$(brew --prefix qt6)/share/qt/libexec/rcc \
                  -DCMAKE_INSTALL_PREFIX=tuningTrainer.app \
                  -DCMAKE_OSX_ARCHITECTURES="arm64" \
                  -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} || echo "CMake ARM64 failed"
