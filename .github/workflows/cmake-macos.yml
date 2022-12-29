@@ -24,22 +24,7 @@ jobs:
     - uses: actions/checkout@v3
     - name: Fetch dependencies
       run: |
-           rm -Rf $(brew --cache)/*
-           mkdir -p ~/brew-mod/{x86_64,arm64}
-           echo "Fetching for x86_64"
-           brew fetch -q --force --bottle-tag=monterey --deps qt@6
-           for i in $(brew --cache)/downloads/*.tar.gz
-           do 
-           tar -xzf $i -C ~/brew-mod/x86_64
-           rm $i
-           done
-           echo "Fetching for arm64"
-           brew fetch -q --force --bottle-tag=arm64_monterey --deps qt@6
-           for i in $(brew --cache)/downloads/*.tar.gz
-           do 
-           tar -xzf $i -C ~/brew-mod/arm64
-           rm $i
-           done
+           ${{github.workspace}}/scripts/ci/macos/fetch_deps.sh
            
     - name: Check files
       run: |
@@ -54,8 +39,9 @@ jobs:
         
     - name: Create universal
       run: |
+           mkdir ~/brew-mod || echo "Dir ~/brew-mod/ already created"
            cd ~/brew-mod
-           ${{github.workspace}}/scripts/ci/macos/convert_to_universal.sh ${PWD}
+           ${{github.workspace}}/scripts/ci/macos/convert_to_universal.sh ~/brew-mod
            
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
