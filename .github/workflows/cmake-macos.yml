@@ -42,7 +42,7 @@ jobs:
     - name: Create universal
       run: |
            cd ~/brew-mod
-           ${{github.workspace}}/scripts/ci/macos/convert_to_universal.sh
+           ${{github.workspace}}/scripts/ci/macos/convert_to_universal.sh ${PWD}
            
     - name: Configure CMake x86_64
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -50,8 +50,9 @@ jobs:
       run: |
            QT6_CMAKE=$(find ~/brew-mod/universal -iname Qt6Config.cmake)
            QT6_PATH_LOCAL=${QT6_CMAKE%Qt6Config.cmake}
+           echo "QT6_PATH_LOCAL=${QT6_PATH_LOCAL}"
            cmake -B ${{github.workspace}}/build \
-                 -DQt6_PATH=${QT6_PATH_LOCAL} \
+                 -DQt6_DIR=${QT6_PATH_LOCAL} \
                  -DCMAKE_INSTALL_PREFIX=qbrainwave.app \
                  -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
                  -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} 

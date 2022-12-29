@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 UNAME=$(uname)
+PREFIX=${1}
 echo "${0} was runned on ${UNAME}\n\n
 "
 if [ "$(uname)" = Linux ]; then
@@ -7,6 +8,8 @@ echo "Linux"
 alias brew=/home/linuxbrew/.linuxbrew/bin/brew
 else
 echo "Non Linux"
+echo "Cache location $(brew --cache)"
+ls $PREFIX
 fi
 ####
 makeUniversal() {
