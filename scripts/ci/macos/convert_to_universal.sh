@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 UNAME=$(uname)
+if [ "${1}" = "" ]; then
+PREFIX="."
+else
 PREFIX=${1}
+fi
+
 echo -e "${0} was runned on ${UNAME}\n\n"
 if [ "$(uname)" = "Darwin" ]; then
 echo "Cache location $(brew --cache)"
@@ -22,7 +27,7 @@ elif [ "$(file -b ${i})" == "current ar archive" ]; then
     ${LIPO_PREFIX}lipo "${PREFIX}/arm64/${noPrefixPath}" "${PREFIX}/x86_64/${noPrefixPath}" -create -output "${PREFIX}/universal/${noPrefixPath}"
     echo "==> AR Archive merged: ${noPrefixPath}"
 else
-    cp -v "${1} ${PREFIX}/universal/${noPrefixPath}" || echo "File $(file -b) FAILED"
+    cp -v "${1} ${PREFIX}/universal/${noPrefixPath}" || echo "File $(file -b ${i}) FAILED"
 fi
 }
 
