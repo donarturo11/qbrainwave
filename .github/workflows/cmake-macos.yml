@@ -26,13 +26,15 @@ jobs:
       run: |
            rm -Rf $(brew --cache)/*
            mkdir -p ~/brew-mod/{x86_64,arm64}
-           brew fetch --force --bottle-tag=monterey --deps qt@6
+           echo "Fetching for x86_64"
+           brew fetch -q --force --bottle-tag=monterey --deps qt@6
            for i in $(brew --cache)/downloads/*.tar.gz
            do 
            tar -xzf $i -C ~/brew-mod/x86_64
            rm $i
            done
-           brew fetch --force --bottle-tag=arm64_monterey --deps qt@6
+           echo "Fetching for arm64"
+           brew fetch -q --force --bottle-tag=arm64_monterey --deps qt@6
            for i in $(brew --cache)/downloads/*.tar.gz
            do 
            tar -xzf $i -C ~/brew-mod/arm64
@@ -55,20 +57,19 @@ jobs:
            cd ~/brew-mod
            ${{github.workspace}}/scripts/ci/macos/convert_to_universal.sh ${PWD}
            
-    - name: Configure CMake x86_64
+    - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: |
-           QT6_CMAKE=$(find ~/brew-mod/universal -iname Qt6Config.cmake)
-           QT6_PATH_LOCAL=${QT6_CMAKE%Qt6Config.cmake}
-           echo "QT6_PATH_LOCAL=${QT6_PATH_LOCAL}"
+           QT6_PREFIX=$(cd ~/brew-mod/universal/qt/6*; pwd)
+           echo "QT6_PREFIX=${QT6_PREFIX}"
            cmake -B ${{github.workspace}}/build \
-                 -DQt6_DIR=${QT6_PATH_LOCAL} \
+                 -DCMAKE_PREFIX_PATH="${QT6_PREFIX} \
                  -DCMAKE_INSTALL_PREFIX=qbrainwave.app \
                  -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
                  -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} 
           
-    - name: Build x86_64
+    - name: Build
       # Build your program with the given configuration
       run: |
            echo "Github workspace=${{github.workspace}}"
