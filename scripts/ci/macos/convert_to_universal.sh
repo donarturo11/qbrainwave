@@ -39,7 +39,7 @@ DIRS=$(find ${PREFIX}/arm64 -type d)
 echo "Creating directory structure"
 for i in $DIRS
 do
-universal_dir=$(echo "${i}" | sed "s/\/arm64/universal/g")
+universal_dir=$(echo "${i}" | sed "s/arm64/universal/g")
 #echo "DIR: ${i} -> ${universal_dir}"
 mkdir -vp "${universal_dir}"
 done
