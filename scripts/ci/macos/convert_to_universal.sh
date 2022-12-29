@@ -12,15 +12,15 @@ fi
 makeUniversal() {    
 mimetype=$(file -b --mime-type $1)
 noPrefixPath="${1#arm64/}"
-echo -e "==> Copyoing file {1}\n   as ${mimetype}"
+#echo -e "==> Copyoing file ${1}\n   as ${mimetype}"
 if [ "${mimetype}" = "application/x-mach-binary" ]; then
-    echo "==> Mach-O binary merged: ${noPrefixPath}"
     lipo "x86_64/${noPrefixPath}" "arm64/${noPrefixPath}" -create -output "universal/${noPrefixPath}"
+    echo "==> Mach-O binary merged: ${noPrefixPath}"
 elif [ "${mimetype}" = "inode/directory" ]; then
-    echo "==> directory copied ${noPrefixPath}"
     mkdir -vp "universal/${noPrefixPath}"
+    # echo "--- directory copied ${noPrefixPath}"
 else
-    cp -v "arm64/${noPrefixPath}" "universal/${noPrefixPath}"
+    cp "arm64/${noPrefixPath}" "universal/${noPrefixPath}"
 fi
 }
 ####
