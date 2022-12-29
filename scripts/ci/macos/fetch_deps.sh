@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
+
+BREW_PREFIX=$(brew --prefix || echo ".homebrew")
+
 if [ "$(uname)" = "Darwin" ]; then
 echo "Cache location $(brew --cache)"
 BREW_BIN_PATH=""
 ls $PREFIX
 else
-BREW_BIN_PATH="/home/linuxbrew/.linuxbrew/bin/"
+BREW_BIN_PATH=${BREW_PREFIX}/bin/
 echo "This system is not MacOS"
 fi
 
