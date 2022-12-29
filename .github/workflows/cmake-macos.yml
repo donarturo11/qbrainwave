@@ -50,7 +50,7 @@ jobs:
            QT6_PREFIX=$(cd ~/brew-mod/universal/qt/6*; pwd)
            echo "QT6_PREFIX=${QT6_PREFIX}"
            cmake -B ${{github.workspace}}/build \
-                 -DCMAKE_PREFIX_PATH="${QT6_PREFIX} \
+                 -DCMAKE_PREFIX_PATH="${QT6_PREFIX}" \
                  -DCMAKE_INSTALL_PREFIX=qbrainwave.app \
                  -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
                  -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} 
