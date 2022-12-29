@@ -22,7 +22,7 @@ elif [ "$(file -b ${i})" == "current ar archive" ]; then
     ${LIPO_PREFIX}lipo "${PREFIX}/arm64/${noPrefixPath}" "${PREFIX}/x86_64/${noPrefixPath}" -create -output "${PREFIX}/universal/${noPrefixPath}"
     echo "==> AR Archive merged: ${noPrefixPath}"
 else
-    cp "${PREFIX}/arm64/${noPrefixPath}" "${PREFIX}/universal/${noPrefixPath}"
+    cp -v "${1} ${PREFIX}/universal/${noPrefixPath}" || echo "File $(file -b) FAILED"
 fi
 }
 
