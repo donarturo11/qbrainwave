@@ -29,16 +29,27 @@ jobs:
            brew fetch --force --bottle-tag=monterey --deps qt@6
            for i in $(brew --cache)/downloads/*.tar.gz
            do 
-           tar -vxzf $i -C ~/brew-mod/x86_64
+           tar -xzf $i -C ~/brew-mod/x86_64
            rm $i
            done
            brew fetch --force --bottle-tag=arm64_monterey --deps qt@6
            for i in $(brew --cache)/downloads/*.tar.gz
            do 
-           tar -vxzf $i -C ~/brew-mod/arm64
+           tar -xzf $i -C ~/brew-mod/arm64
            rm $i
            done
+           
+    - name: Check files
+      run: |
+           mkdir ~/diagnostic-artifacts
+           find ~/brew-mod/ > ~/diagnostic-artifacts/brew-mod-contents.txt
     
+    - name: Upload diagnostics
+      uses: actions/upload-artifact@v3.0.0
+      with:
+        name: qbrainwave-macos-diagnostics
+        path: ~/diagnostic-artifacts/
+        
     - name: Create universal
       run: |
            cd ~/brew-mod
