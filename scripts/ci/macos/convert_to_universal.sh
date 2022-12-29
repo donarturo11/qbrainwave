@@ -31,6 +31,7 @@ mimetype=$(file -b --mime-type $1)
 noPrefixPath="${1#arm64/}"
 if [ "${mimetype}" = "inode/directory" ]; then
     mkdir -vp "universal/${noPrefixPath}"
+fi
 done
 
 for i in $FILES
