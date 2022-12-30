@@ -22,6 +22,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    
+    - name: Hombrew configuration
+      run: |
+           git clone https://github.com/Homebrew/brew ~/homebrew
+           eval "$(~/homebrew/bin/brew shellenv)"
+           echo $(brew shellenv)
+    
     - name: Fetch dependencies
       run: |
            curl https://freeshell.de/~arturwro/downloads/brew-monterey-universal.tar.gz | tar -xz -C ~
