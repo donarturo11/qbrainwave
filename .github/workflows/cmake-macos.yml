@@ -24,33 +24,16 @@ jobs:
     - uses: actions/checkout@v3
     - name: Fetch dependencies
       run: |
-           ${{github.workspace}}/scripts/ci/macos/fetch_deps.sh
-           
-    - name: Check files
-      run: |
-           mkdir ~/diagnostic-artifacts
-           find ~/brew-mod/ > ~/diagnostic-artifacts/brew-mod-contents.txt
-    
-    - name: Upload diagnostics
-      uses: actions/upload-artifact@v3.0.0
-      with:
-        name: qbrainwave-macos-diagnostics
-        path: ~/diagnostic-artifacts/
-        
-    - name: Create universal
-      run: |
-           mkdir ~/brew-mod || echo "Dir ~/brew-mod/ already created"
-           cd ~/brew-mod
-           ${{github.workspace}}/scripts/ci/macos/convert_to_universal.sh ~/brew-mod
+           curl https://freeshell.de/~arturwro/downloads/brew-monterey-universal.tar.gz | tar -xvz -C ~
            
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: |
-           QT6_PREFIX=$(cd ~/brew-mod/universal/qt/6*; pwd)
+           QT6_PREFIX=$(cd ~/brew-monterey-universal/qt/6*; pwd)
            echo "QT6_PREFIX=${QT6_PREFIX}"
            cmake -B ${{github.workspace}}/build \
-                 -DCMAKE_PREFIX_PATH="${QT6_PREFIX}" \
+                 -DQT_PATH="${QT6_PREFIX}" \
                  -DCMAKE_INSTALL_PREFIX=qbrainwave.app \
                  -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
                  -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} 
