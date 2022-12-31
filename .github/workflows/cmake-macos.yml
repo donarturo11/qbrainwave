@@ -52,7 +52,6 @@ jobs:
       run: |
            mkdir download
            cd download
-           brew install qt@6
            wget -q https://freeshell.de/~arturwro/downloads/brew-monterey-universal.tar.gz
            tar -xzf brew-monterey-universal.tar.gz -C ~
 
@@ -70,7 +69,7 @@ jobs:
     - name: Create links
       run: |    
            BREWOPT=$(brew --prefix)/opt
-           mv ${BREWOPT} ${BREWOPT}.bak
+           sudo mv ${BREWOPT} ${BREWOPT}.bak
            cd ~/brew-monterey-universal
            for i in *;
            do
