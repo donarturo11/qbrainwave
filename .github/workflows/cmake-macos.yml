@@ -33,14 +33,14 @@ jobs:
       run: |
            mkdir download
            cd download
-           wget https://freeshell.de/~arturwro/downloads/brew-monterey-universal.tar.gz
+           wget -q https://freeshell.de/~arturwro/downloads/brew-monterey-universal.tar.gz
            tar -xzf brew-monterey-universal.tar.gz -C ~
     
     - name: Create links
       run: |    
            BREWOPT=$(brew --prefix)/opt
            echo $BREWOPT
-           cd brew-monterey-universal
+           cd ~/brew-monterey-universal
            for i in *
            do
            ln -s ${i} ${BREWOPT}/$i
