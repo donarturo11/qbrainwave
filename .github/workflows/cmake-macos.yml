@@ -86,7 +86,7 @@ jobs:
       run: |
            echo $(brew --prefix qt@6)
            cmake -B ${{github.workspace}}/build \
-                 -DQt_DIR=$(brew --prefix qt@6)/lib/cmake/ \
+                 -DQT_DIR=$(brew --prefix qt@6)/lib/cmake/ \
                  -DCMAKE_INSTALL_PREFIX=qbrainwave.app \
                  -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
                  -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} 
@@ -121,6 +121,7 @@ jobs:
       if: ${{ failure() }}
       run: |
            BREWOPT=$(brew --prefix)/opt
+           sudo rm -Rf ${BREWOPT}
            sudo mv ${BREWOPT}.bak ${BREWOPT}
            sudo chown -R $(whoami) /usr/local/opt
            sudo chmod u+w /usr/local/opt
