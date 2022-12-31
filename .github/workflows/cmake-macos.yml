@@ -23,6 +23,13 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
+    - name: Prepare environment
+      run: |
+           if [[ -x ~/artifacts ]]; then 
+           rmdir -Rf ~/artifacts
+           fi
+           mkdir ~/artifacts
+    
     - name: Hombrew configuration
       run: |
            git clone -q https://github.com/Homebrew/brew ~/homebrew
@@ -42,12 +49,9 @@ jobs:
            BREWOPT=$(brew --prefix)/opt
            echo $BREWOPT
            echo $(brew shellenv)
-           cd ~/brew-monterey-universal
-           ls -lah
-           for i in *
-           do
-           ln -fvs "${i}" "${BREWOPT}/$i"
-           done
+           mv -v ${BREWOPT} ${BREWOPT}.bak
+           ln -fvs ~/brew-monterey-universal ${BREWOPT}
+           ls -lah ${BREWOPT}
            
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -83,11 +87,7 @@ jobs:
     - name: Prepare Artifact
       run: |
            cd ${{github.workspace}}/build
-           if [[ -x artifacts ]]; then 
-           rmdir -Rf artifacts
-           fi
-           mkdir artifacts
-           cp -Rv qbrainwave.app artifacts/qbrainwave.app
+           cp -Rv qbrainwave.app ~/artifacts/qbrainwave.app
 
 
     - name: Upload tuningTrainer-mac
