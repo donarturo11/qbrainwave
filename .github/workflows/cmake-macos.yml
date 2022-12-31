@@ -43,9 +43,10 @@ jobs:
            echo $BREWOPT
            echo $(brew shellenv)
            cd ~/brew-monterey-universal
+           ls -lah
            for i in *
            do
-           ln -s "${PWD}/${i}" "${BREWOPT}/$i"
+           ln -s "~/brew-monterey-universal/${i}" "${BREWOPT}/$i"
            done
            
     - name: Configure CMake
