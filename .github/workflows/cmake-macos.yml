@@ -22,7 +22,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
+    - name: Setup tmate session
+      if: ${{ failure() }}
+      uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 15
+      
     - name: Prepare environment
       run: |
            if [[ -x ~/artifacts ]]; then 
