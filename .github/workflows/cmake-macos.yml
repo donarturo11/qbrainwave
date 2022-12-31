@@ -25,8 +25,9 @@ jobs:
     
     - name: Hombrew configuration
       run: |
-           git clone https://github.com/Homebrew/brew ~/homebrew
+           git clone -q https://github.com/Homebrew/brew ~/homebrew
            eval "$(~/homebrew/bin/brew shellenv)"
+           brew update --force --quiet
            echo $(brew shellenv)
     
     - name: Fetch dependencies
@@ -40,6 +41,7 @@ jobs:
       run: |    
            BREWOPT=$(brew --prefix)/opt
            echo $BREWOPT
+           echo $(brew shellenv)
            cd ~/brew-monterey-universal
            for i in *
            do
