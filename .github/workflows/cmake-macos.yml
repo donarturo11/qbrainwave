@@ -46,8 +46,15 @@ jobs:
     - name: Type brew directory contents
       run: |
            eval "$(~/homebrew/bin/brew shellenv)"
-           find $(brew --prefix) > ~/artifacts/brewdirectory.txt
-
+           mkdir diagnostics
+           find $(brew --prefix) > ~/diagnostics/brewdirectory.txt
+    
+    - name: Upload tuningTrainer-mac
+      uses: actions/upload-artifact@v3.0.0
+      with:
+        name: brewdiag
+        path: ~/diagnostics/
+    
     - name: Create links
       run: |    
            eval "$(~/homebrew/bin/brew shellenv)"
