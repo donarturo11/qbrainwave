@@ -48,10 +48,11 @@ jobs:
            fi
            mkdir ~/artifacts
     
-    - name: Hombrew configuration
+    - name: Homebrew configuration
       run: |
            git clone -q https://github.com/Homebrew/brew ~/homebrew
            eval "$(~/homebrew/bin/brew shellenv)"
+           export HOMEBREW_PREFIX="$(~/homebrew/bin/brew --prefix)"
            brew update --force --quiet
     
     - name: Fetch dependencies
@@ -64,7 +65,7 @@ jobs:
     - name: Type brew directory contents
       run: |
            eval "$(~/homebrew/bin/brew shellenv)"
-           mkdir diagnostics
+           mkdir ~/diagnostics
            find $(brew --prefix) > ~/diagnostics/brewdirectory.txt
     
     - name: Upload tuningTrainer-mac
