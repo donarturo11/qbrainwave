@@ -51,7 +51,7 @@ jobs:
     - name: Homebrew configuration
       run: |
            git clone -q https://github.com/Homebrew/brew ~/homebrew
-           eval "$(~/homebrew/bin/brew shellenv)"
+           eval $(~/homebrew/bin/brew shellenv)
            export HOMEBREW_PREFIX="$(~/homebrew/bin/brew --prefix)"
            ~/homebrew/bin/brew update --force --quiet
     
@@ -64,7 +64,7 @@ jobs:
 
     - name: Type brew directory contents
       run: |
-           eval "$(~/homebrew/bin/brew shellenv)"
+           eval $(~/homebrew/bin/brew shellenv)
            mkdir ~/diagnostics
            find $(brew --prefix) > ~/diagnostics/brewdirectory.txt
     
@@ -76,7 +76,7 @@ jobs:
     
     - name: Create links
       run: |    
-           eval "$(~/homebrew/bin/brew shellenv)"
+           eval $(~/homebrew/bin/brew shellenv)
            BREWOPT=$(brew --prefix)/opt
            echo $BREWOPT
            echo $(brew shellenv)
