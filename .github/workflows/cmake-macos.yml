@@ -46,7 +46,7 @@ jobs:
            ls -lah
            for i in *
            do
-           ln -s "~/brew-monterey-universal/${i}" "${BREWOPT}/$i"
+           ln -fvs "${i}" "${BREWOPT}/$i"
            done
            
     - name: Configure CMake
