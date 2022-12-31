@@ -54,11 +54,13 @@ jobs:
            eval $(~/homebrew/bin/brew shellenv)
            export HOMEBREW_PREFIX="$(~/homebrew/bin/brew --prefix)"
            ~/homebrew/bin/brew update --force --quiet
+           brew install qt@6
     
     - name: Fetch dependencies
       run: |
            mkdir download
            cd download
+           brew install qt@6
            wget -q https://freeshell.de/~arturwro/downloads/brew-monterey-universal.tar.gz
            tar -xzf brew-monterey-universal.tar.gz -C ~
 
@@ -78,11 +80,9 @@ jobs:
       run: |    
            eval $(~/homebrew/bin/brew shellenv)
            BREWOPT=$(brew --prefix)/opt
-           echo $BREWOPT
-           echo $(brew shellenv)
-           mv -v ${BREWOPT} ${BREWOPT}.bak
-           ln -fvs ~/brew-monterey-universal ${BREWOPT}
-           ls -lah ${BREWOPT}
+           mv /usr/local/Cellar /usr/local/Cellar.bak
+           ln -fvs ${HOME}/brew-monterey-universal /usr/local/Cellar
+           
            
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
