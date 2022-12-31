@@ -70,6 +70,7 @@ jobs:
       run: |    
            BREWOPT=$(brew --prefix)/opt
            sudo mv ${BREWOPT} ${BREWOPT}.bak
+           mkdir ${BREWOPT}
            cd ~/brew-monterey-universal
            for i in *;
            do
@@ -114,7 +115,13 @@ jobs:
       with:
         name: qbrainwave-macos-universal
         path: ~/artifacts
-        
+    
+    - name: Revert brew
+      if: ${{ failure() }}
+      run: |
+           BREWOPT=$(brew --prefix)/opt
+           sudo mv ${BREWOPT}.bak ${BREWOPT}
+            
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
       if: ${{ failure() }}
