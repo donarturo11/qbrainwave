@@ -8,6 +8,10 @@ on:
         description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'     
         required: false
         default: false
+      tags:
+        description: 'Test scenario tags'
+        required: true 
+        type: string  
   push:
     branches:
        - main
@@ -32,7 +36,6 @@ jobs:
     
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
-      if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
       with:
           limit-access-to-actor: true
 #      timeout-minutes: 60
@@ -121,4 +124,11 @@ jobs:
       with:
         name: qbrainwave-macos-universal
         path: ~/artifacts
+        
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      if: ${{ failure() }}
+      with:
+          limit-access-to-actor: true
+#      timeout-minutes: 60        
         
