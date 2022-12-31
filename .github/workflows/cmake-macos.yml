@@ -71,11 +71,13 @@ jobs:
            BREWOPT=$(brew --prefix)/opt
            sudo mv ${BREWOPT} ${BREWOPT}.bak
            sudo mkdir ${BREWOPT}
+           sudo chown -R $(whoami) /usr/local/opt
+           sudo chmod u+w /usr/local/opt
            cd ~/brew-monterey-universal
            for i in *;
            do
            ver=$(cd ${i}; ls)
-           ln -vs "${PWD}/${i}/${ver}" "${BREWOPT}/${i}"
+           sudo ln -vs "${PWD}/${i}/${ver}" "${BREWOPT}/${i}"
            done
            
     - name: Configure CMake
@@ -91,7 +93,6 @@ jobs:
     - name: Build
       # Build your program with the given configuration
       run: |
-           eval "$(~/homebrew/bin/brew shellenv)"
            echo "Github workspace=${{github.workspace}}"
            echo "PWD=${PWD}"
            cd ${{github.workspace}}/build
@@ -99,7 +100,6 @@ jobs:
 
     - name: Build Package
       run: |
-           eval "$(~/homebrew/bin/brew shellenv)"
            cd ${{github.workspace}}/build
            macdeployqt qbrainwave.app || echo "Macdeploy FAILED"
            file qbrainwave/Contents/MacOS/qbrainwave || echo "No such file"
@@ -121,6 +121,8 @@ jobs:
       run: |
            BREWOPT=$(brew --prefix)/opt
            sudo mv ${BREWOPT}.bak ${BREWOPT}
+           sudo chown -R $(whoami) /usr/local/opt
+           sudo chmod u+w /usr/local/opt
             
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
