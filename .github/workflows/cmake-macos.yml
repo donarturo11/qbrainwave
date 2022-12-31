@@ -70,7 +70,7 @@ jobs:
       run: |    
            BREWOPT=$(brew --prefix)/opt
            sudo mv ${BREWOPT} ${BREWOPT}.bak
-           mkdir ${BREWOPT}
+           sudo mkdir ${BREWOPT}
            cd ~/brew-monterey-universal
            for i in *;
            do
