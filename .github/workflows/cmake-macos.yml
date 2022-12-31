@@ -34,12 +34,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
- #   - name: Setup tmate session
- #     uses: mxschmitt/action-tmate@v3
- #     with:
- #         limit-access-to-actor: true
- #         if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
-#      timeout-minutes: 60
+#    - name: Setup tmate session
+#      uses: mxschmitt/action-tmate@v3
+#      with:
+#          limit-access-to-actor: true
+#          if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+#       timeout-minutes: 60
       
     - name: Prepare environment
       run: |
@@ -47,14 +47,6 @@ jobs:
            rmdir -Rf ~/artifacts
            fi
            mkdir ~/artifacts
-    
-    - name: Homebrew configuration
-      run: |
-           git clone -q https://github.com/Homebrew/brew ~/homebrew
-           eval $(~/homebrew/bin/brew shellenv)
-           export HOMEBREW_PREFIX="$(~/homebrew/bin/brew --prefix)"
-           ~/homebrew/bin/brew update --force --quiet
-           brew install qt@6
     
     - name: Fetch dependencies
       run: |
@@ -66,7 +58,6 @@ jobs:
 
     - name: Type brew directory contents
       run: |
-           eval $(~/homebrew/bin/brew shellenv)
            mkdir ~/diagnostics
            find $(brew --prefix) > ~/diagnostics/brewdirectory.txt
     
@@ -78,23 +69,21 @@ jobs:
     
     - name: Create links
       run: |    
-           eval $(~/homebrew/bin/brew shellenv)
            BREWOPT=$(brew --prefix)/opt
-           mv /usr/local/Cellar /usr/local/Cellar.bak
-           ln -fvs ${HOME}/brew-monterey-universal /usr/local/Cellar
-           
+           mv ${BREWOPT} ${BREWOPT}.bak
+           cd ~/brew-monterey-universal
+           for i in *;
+           do
+           ver=$(cd ${i}; ls)
+           ln -vs "${PWD}/${i}/${ver}" "${BREWOPT}/${i}"
+           done
            
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: |
-           eval "$(~/homebrew/bin/brew shellenv)"
            echo $(brew --prefix qt@6)
-           QT6_PREFIX=$(cd ~/brew-monterey-universal/qt/6*; pwd)
-           echo "QT6_PREFIX=${QT6_PREFIX}"
            cmake -B ${{github.workspace}}/build \
-                 -DCMAKE_PREFIX_PATH="${QT6_PREFIX}" \
-                 -DQt_PATH="${QT6_PREFIX}/lib/cmake/Qt6/" \
                  -DCMAKE_INSTALL_PREFIX=qbrainwave.app \
                  -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
                  -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} 
