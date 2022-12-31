@@ -1,7 +1,7 @@
 name: Build MacOS Monterey
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
     inputs:
       debug_enabled:
         type: boolean
