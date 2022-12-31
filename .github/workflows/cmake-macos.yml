@@ -34,11 +34,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-      with:
-          limit-access-to-actor: true
-          if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+ #   - name: Setup tmate session
+ #     uses: mxschmitt/action-tmate@v3
+ #     with:
+ #         limit-access-to-actor: true
+ #         if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
 #      timeout-minutes: 60
       
     - name: Prepare environment
