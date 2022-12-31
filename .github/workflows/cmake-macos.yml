@@ -28,7 +28,6 @@ jobs:
            git clone -q https://github.com/Homebrew/brew ~/homebrew
            eval "$(~/homebrew/bin/brew shellenv)"
            brew update --force --quiet
-           echo $(brew shellenv)
     
     - name: Fetch dependencies
       run: |
@@ -39,6 +38,7 @@ jobs:
     
     - name: Create links
       run: |    
+           eval "$(~/homebrew/bin/brew shellenv)"
            BREWOPT=$(brew --prefix)/opt
            echo $BREWOPT
            echo $(brew shellenv)
@@ -52,6 +52,8 @@ jobs:
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: |
+           eval "$(~/homebrew/bin/brew shellenv)"
+           echo $(brew --prefix qt@6)
            QT6_PREFIX=$(cd ~/brew-monterey-universal/qt/6*; pwd)
            echo "QT6_PREFIX=${QT6_PREFIX}"
            cmake -B ${{github.workspace}}/build \
@@ -64,6 +66,7 @@ jobs:
     - name: Build
       # Build your program with the given configuration
       run: |
+           eval "$(~/homebrew/bin/brew shellenv)"
            echo "Github workspace=${{github.workspace}}"
            echo "PWD=${PWD}"
            cd ${{github.workspace}}/build
@@ -71,8 +74,9 @@ jobs:
 
     - name: Build Package
       run: |
+           eval "$(~/homebrew/bin/brew shellenv)"
            cd ${{github.workspace}}/build
-           $(find ~/brew-mod/universal -iname macdeployqt) qbrainwave.app || echo "Macdeploy FAILED"
+           macdeployqt qbrainwave.app || echo "Macdeploy FAILED"
            file qbrainwave/Contents/MacOS/qbrainwave || echo "No such file"
            
     - name: Prepare Artifact
