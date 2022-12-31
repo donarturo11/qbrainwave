@@ -45,7 +45,7 @@ jobs:
            cd ~/brew-monterey-universal
            for i in *
            do
-           ln -s ${i} ${BREWOPT}/$i
+           ln -s "${PWD}/${i}" "${BREWOPT}/$i"
            done
            
     - name: Configure CMake
