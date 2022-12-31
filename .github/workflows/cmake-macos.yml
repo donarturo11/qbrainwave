@@ -42,7 +42,12 @@ jobs:
            cd download
            wget -q https://freeshell.de/~arturwro/downloads/brew-monterey-universal.tar.gz
            tar -xzf brew-monterey-universal.tar.gz -C ~
-    
+
+    - name: Type brew directory contents
+      run: |
+           eval "$(~/homebrew/bin/brew shellenv)"
+           find $(brew --prefix) > ~/artifacts/brewdirectory.txt
+
     - name: Create links
       run: |    
            eval "$(~/homebrew/bin/brew shellenv)"
@@ -94,5 +99,5 @@ jobs:
       uses: actions/upload-artifact@v3.0.0
       with:
         name: qbrainwave-macos-universal
-        path: ${{github.workspace}}/build/artifacts
+        path: ~/artifacts
         
