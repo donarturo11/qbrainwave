@@ -86,7 +86,8 @@ jobs:
       run: |
            echo $(brew --prefix qt@6)
            cmake -B ${{github.workspace}}/build \
-                 -DQT_DIR=$(brew --prefix qt@6)/lib/cmake/ \
+                 -DQT_DIR=$(brew --prefix qt@6)/lib/cmake/Qt6 \
+                 -DQt6_DIR=$(brew --prefix qt@6)/lib/cmake/Qt6 \
                  -DCMAKE_INSTALL_PREFIX=qbrainwave.app \
                  -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
                  -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} 
