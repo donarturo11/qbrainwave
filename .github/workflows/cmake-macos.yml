@@ -22,6 +22,9 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
+  QTPATH:$HOME/Qt6/
+  QT_VERSION:6.4.0
+  QT_MACOS:$QT_PATH/$QT_VERSION/macos
 
 
 jobs:
@@ -48,46 +51,37 @@ jobs:
            fi
            mkdir ~/artifacts
     
-    - name: Fetch dependencies
+    - name: Install QT
       run: |
-           mkdir download
-           cd download
-           wget -q https://freeshell.de/~arturwro/downloads/brew-monterey-universal.tar.gz
-           tar -xzf brew-monterey-universal.tar.gz -C ~
+           
+           pip3 install aqtinstall
+           aqt install-qt -O "$QT_PATH" mac desktop 6.4.0
+           aqt install-src -O "$QT_PATH" mac "$QT_VERSION" --archives qtbase qtconnectivity # Contains macdeployqt
+           aqt install-tool -O "$QT_PATH" mac tools_cmake
+           aqt install-tool -O "$QT_PATH" mac desktop tools_ninja
+           cmake -S "$QT_MACOS/../Src/qtbase" -G Ninja -B $QT_MACOS/../Src/qtbase-build \
+                -DQT_FEATURE_macdeployqt=ON -DQT_FEATURE_network=ON -DQT_FEATURE_gui=OFF \
+                -DQT_FEATURE_concurrent=OFF -DQT_FEATURE_sql=OFF -DQT_FEATURE_dbus=OFF \
+                -DQT_FEATURE_testlib=OFF -DQT_FEATURE_printsupport=OFF -DQT_FEATURE_androiddeployqt=OFF \
+                -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=$QT_MACOS
+           cmake --build $QT_MACOS/../Src/qtbase-build
+           cmake --install $QT_MACOS/../Src/qtbase-build
+           cmake -S "$QT_MACOS/../Src/qtconnectivity" -G Ninja -B $QT_MACOS/../Src/qtconnectivity-build \
+                -DQT_FEATURE_macdeployqt=ON -DQT_FEATURE_network=ON -DQT_FEATURE_gui=OFF \
+                -DQT_FEATURE_concurrent=OFF -DQT_FEATURE_sql=OFF -DQT_FEATURE_dbus=OFF \
+                -DQT_FEATURE_testlib=OFF -DQT_FEATURE_printsupport=OFF -DQT_FEATURE_androiddeployqt=OFF \
+                -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=$QT_MACOS
+           cmake --build $QT_MACOS/../Src/qtconnectivity-build
+           cmake --install $QT_MACOS/../Src/qtconnectivity-build
 
-    - name: Type brew directory contents
-      run: |
-           mkdir ~/diagnostics
-           find $(brew --prefix) > ~/diagnostics/brewdirectory.txt
-    
-    - name: Upload tuningTrainer-mac
-      uses: actions/upload-artifact@v3.0.0
-      with:
-        name: brewdiag
-        path: ~/diagnostics/
-    
-    - name: Create links
-      run: |    
-           BREWOPT=$(brew --prefix)/opt
-           sudo mv ${BREWOPT} ${BREWOPT}.bak
-           sudo mkdir ${BREWOPT}
-           sudo chown -R $(whoami) /usr/local/opt
-           sudo chmod u+w /usr/local/opt
-           cd ~/brew-monterey-universal
-           for i in *;
-           do
-           ver=$(cd ${i}; ls)
-           sudo ln -vs "${PWD}/${i}/${ver}" "${BREWOPT}/${i}"
-           done
+
            
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: |
-           echo $(brew --prefix qt@6)
-           cmake -B ${{github.workspace}}/build \
-                 -DQT_DIR=$(brew --prefix qt@6)/lib/cmake/Qt6 \
-                 -DQt6_DIR=$(brew --prefix qt@6)/lib/cmake/Qt6 \
+           echo "QT_MACOS=$QT_MACOS"
+           ${QT_MACOS}/bin/qt-cmake -B ${{github.workspace}}/build \
                  -DCMAKE_INSTALL_PREFIX=qbrainwave.app \
                  -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
                  -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} 
@@ -103,7 +97,7 @@ jobs:
     - name: Build Package
       run: |
            cd ${{github.workspace}}/build
-           macdeployqt qbrainwave.app || echo "Macdeploy FAILED"
+           ${QT_MACOS}/bin/macdeployqt qbrainwave.app || echo "Macdeploy FAILED"
            file qbrainwave/Contents/MacOS/qbrainwave || echo "No such file"
            
     - name: Prepare Artifact
@@ -118,15 +112,6 @@ jobs:
         name: qbrainwave-macos-universal
         path: ~/artifacts
     
-    - name: Revert brew
-      if: ${{ failure() }}
-      run: |
-           BREWOPT=$(brew --prefix)/opt
-           sudo rm -Rf ${BREWOPT}
-           sudo mv ${BREWOPT}.bak ${BREWOPT}
-           sudo chown -R $(whoami) /usr/local/opt
-           sudo chmod u+w /usr/local/opt
-           brew update
             
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
