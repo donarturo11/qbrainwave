@@ -1,4 +1,4 @@
-name: Build MacOS Monterey
+name: Build MacOS
 
 on:
   push:
@@ -10,7 +10,6 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
-
 
 jobs:
   build-macos:
@@ -56,6 +55,7 @@ jobs:
            cd ${{github.workspace}}/build
            ~/Qt/6.4.0/macos/bin/macdeployqt qbrainwave.app || echo "Macdeploy FAILED"
            file qbrainwave/Contents/MacOS/qbrainwave || echo "No such file"
+           codesign -dv --verbose=4 qbrainwave.app || echo "Codesign FAILED"
            
     - name: Prepare Artifact
       run: |
@@ -67,5 +67,3 @@ jobs:
       with:
         name: qbrainwave-macos-universal
         path: ~/artifacts
-      
-        
