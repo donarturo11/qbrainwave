@@ -33,7 +33,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
 # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 else()
     if(ANDROID)
-        add_library(qBrainwaveOSC SHARED
+        add_library(${PROJECT_NAME} SHARED
             ${PROJECT_SOURCES}
         )
 # Define properties for Android with Qt 5 after find_package() calls as:
@@ -61,11 +61,20 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 endif()
 
-
+if(MINGW)
+    set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+    set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+    set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+elseif(UNIX AND (NOT APPLE))
+    include(GNUInstallDirs)
+    set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+    set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+    set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+endif()
 
 install(TARGETS ${PROJECT_NAME}
-    BUNDLE DESTINATION .
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+BUNDLE DESTINATION .
+LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 ### MINGW - FILES REQUIRED TO RUN ###
 if(MINGW)
@@ -80,9 +89,9 @@ if(MINGW)
         $ENV{MSYSTEM_PREFIX}/bin/libgraphite2.dll
         $ENV{MSYSTEM_PREFIX}/bin/libharfbuzz-0.dll
         $ENV{MSYSTEM_PREFIX}/bin/libiconv-2.dll
-        $ENV{MSYSTEM_PREFIX}/bin/libicudt69.dll
-        $ENV{MSYSTEM_PREFIX}/bin/libicuin69.dll
-        $ENV{MSYSTEM_PREFIX}/bin/libicuuc69.dll
+        $ENV{MSYSTEM_PREFIX}/bin/libicudt72.dll
+        $ENV{MSYSTEM_PREFIX}/bin/libicuin72.dll
+        $ENV{MSYSTEM_PREFIX}/bin/libicuuc72.dll
         $ENV{MSYSTEM_PREFIX}/bin/libintl-8.dll
         $ENV{MSYSTEM_PREFIX}/bin/libmd4c.dll
         $ENV{MSYSTEM_PREFIX}/bin/libpcre-1.dll
@@ -94,13 +103,13 @@ if(MINGW)
         $ENV{MSYSTEM_PREFIX}/bin/zlib1.dll
     DESTINATION ${PROJECT_NAME})
     install( FILES
-        $ENV{MSYSTEM_PREFIX}/bin/Qt5Core.dll
-        $ENV{MSYSTEM_PREFIX}/bin/Qt5Gui.dll
-        $ENV{MSYSTEM_PREFIX}/bin/Qt5Widgets.dll
+        $ENV{MSYSTEM_PREFIX}/bin/Qt6Core.dll
+        $ENV{MSYSTEM_PREFIX}/bin/Qt6Gui.dll
+        $ENV{MSYSTEM_PREFIX}/bin/Qt6Widgets.dll
         DESTINATION ${PROJECT_NAME})
     install( DIRECTORY
-        $ENV{MSYSTEM_PREFIX}/share/qt5/plugins/platforms
-        $ENV{MSYSTEM_PREFIX}/share/qt5/plugins/styles
+        $ENV{MSYSTEM_PREFIX}/share/qt6/plugins/platforms
+        $ENV{MSYSTEM_PREFIX}/share/qt6/plugins/styles
         DESTINATION ${PROJECT_NAME})
 endif()
 ### END MINGW ###

@@ -10,6 +10,7 @@ on:
 env:
   #  Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
+  TIME: 0000
 
 jobs:
   build-windows:
@@ -33,58 +34,56 @@ jobs:
            echo "MINGW_RUNNER_TEMP=${RUNNER_TEMP//\\//}" >> $GITHUB_ENV
            echo "MINGW_ROOT=$(cd /; pwd -W)" >> $GITHUB_ENV
            echo "MINGW_GIT_WORKSPACE=${GITHUB_WORKSPACE//\\//}" >> $GITHUB_ENV
+           TIME=$(date +%Y%d%m-%H%M%S)
            
     - name: Print MINGW env vars
       run: |
            echo "MINGW_ROOT = ${{env.MINGW_ROOT}}"
            echo "MINGW_RUNNER_TEMP = ${{env.MINGW_RUNNER_TEMP}}"
            echo "Github workspace = $MINGW_GIT_WORKSPACE"
+           echo "github.workspace=${{github.workspace}}"
            
     - name: Setup MinGW Build environment
       uses: msys2/setup-msys2@v2
       with:
         msystem: MINGW64
-        install: base base-devel tree autoconf automake-wrapper dos2unix zip git mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake
+        install: base base-devel tree autoconf automake-wrapper dos2unix zip git mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-pcre
     
     - name: Git checkout
       uses: actions/checkout@v3
       
-    - name: Install qt5
+    - name: Install qt6
       uses: msys2/setup-msys2@v2
       with:
          msystem: MINGW64
-         install: mingw-w64-x86_64-qt5
+         install: mingw-w64-x86_64-qt6
 
     - name: Build qbrainwave
       # Build your program with the given configuration
       run: |
-           cd ${MINGW_GIT_WORKSPACE}
-           mkdir build
-           cd build
-           cmake .. \
+           find ${MINGW_GIT_WORKSPACE} > /d/artifacts/mingw-git-workspace
+           cd ${{github.workspace}}
+           cmake \
+              -B ${MINGW_GIT_WORKSPACE/build} \
+              -S ${MINGW_GIT_WORKSPACE} \
               -G "Unix Makefiles" \
-              -DMINGW_ROOT="/$(cd /; pwd -W | sed "s/://g" | tr [:upper:] [:lower:])" \
-              -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/qbrainwave-win \
+              -DCMAKE_INSTALL_PREFIX=/d/artifacts/qbrainwave-win \
               -DCMAKE_CXX_FLAGS="-static -L /mingw64/lib/"
-           make 
+           cmake --build ${MINGW_GIT_WORKSPACE/build}
     
     - name: Package qbrainwave
       run: |
-           cd ${MINGW_GIT_WORKSPACE}/build
-           make install
-           tree .
-           if [[ -x /d/artifacts ]]; then
-           rm -Rf artifacts
-           fi
-           mkdir /d/artifacts/
-           make install
-           cp -Rv ${MINGW_ROOT}/qbrainwave-win \
-                   /d/artifacts/
-           tree /d/artifacts/
-           
-           
-    - name: Upload qbrainwave-win.zip
+           cmake --install ${MINGW_GIT_WORKSPACE/build} --prefix /d/artifacts/qbrainwave-win
+
+    - name: Add timestamp
+      run: |
+           cd /d/artifacts/
+           TIME=$(date +%Y%m%d-%H%M%S || echo "latest")
+           echo "TIME=$TIME" >> $GITHUB_ENV
+           mv qbrainwave-win qbrainwave-win-$TIME
+
+    - name: Upload qbrainwave-win-${{ env.TIME }}.zip
       uses: actions/upload-artifact@v3.0.0
       with:
-        name: qbrainwave-win
-        path: D:\artifacts\qbrainwave-win
+        name: qbrainwave-win-${{ env.TIME }}
+        path: D:\artifacts\

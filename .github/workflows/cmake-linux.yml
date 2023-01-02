@@ -9,6 +9,7 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
+  TIME: 00000000-000000
 
 jobs:
   build-linux:
@@ -19,46 +20,57 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Configure environment
+      run: |
+           echo "HOME=$HOME" >> $GITHUB_ENV
     - name: Install dependencies
       run: |
            sudo apt-get update
-           sudo apt-get install cmake-extras qt6-base-dev qt6-connectivity-dev qt6-tools-dev qt6-tools-dev-tools zip
+           sudo apt-get install -y cmake-extras zip libegl1-mesa-dev libfuse2
+           sudo apt-get install -y qt6*
           
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: cmake -B ${{github.workspace}}/build \
                   -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} \
-                  -DCMAKE_INSTALL_PREFIX=/usr/
+                  -DCMAKE_INSTALL_PREFIX=${HOME}/qbrainwave-app/
                   
     - name: Build
       # Build your program with the given configuration
       run: |
           echo ${{github.workspace}}
-          cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+          echo ":: BUILD ::"
+          cmake --build ${{github.workspace}}/build
+          echo ":: Install ::"
+          cmake --install ${{github.workspace}}/build --prefix ~/qbrainwave-app/usr
 
     - name: Build Package
       run: |
            cd ${{github.workspace}}/build
-           mkdir -p artifacts/qbrainwave
-           mkdir appdir/
-           wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
-           wget https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage
+           mkdir -p ${HOME}/artifacts/qbrainwave
+           wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
            chmod +x linuxdeploy*.AppImage
            ./linuxdeploy-x86_64.AppImage \
-                -e ./bin/qbrainwave \
+                -e ${HOME}/qbrainwave-app/usr/bin/qbrainwave \
                 -i ${{github.workspace}}/desktop/qbrainwave-icon.svg \
                 -d ${{github.workspace}}/desktop/qbrainwave.desktop \
                 --output appimage \
-                --appdir appdir/ \
-                --plugin qt
-            cp qbrainwave*.AppImage artifacts/tuningTrainer || echo "FAILED"
-            cp ${{github.workspace}}/src/harpsichord.wav artifacts/tuningTrainer || echo "FAILED"
+                --appdir ${HOME}/qbrainwave-app/ 
+            echo ":: Copy :rocket: ::"    
+            cp -v qbrainwave*.AppImage ${HOME}/artifacts/ || echo "FAILED"
+
+#    - name: Add timestamp
+#      run: |
+#           cd ~/artifacts
+#           TIME=$(date +%Y%m%d-%H%M%S)
+#           echo "TIME=$TIME" >> $GITHUB_ENV
+#           mv qbrainwave*.AppImage qbrainwave-${TIME}.AppImage
     
     - name: Upload qbrainwave-linux
       uses: actions/upload-artifact@v3.0.0
       with:
-        name: qbrainwave-linux
-        path: ${{github.workspace}}/build/artifacts
+        name: qbrainwave-linux-${{ env.TIME }}
+        path: ${{ env.HOME }}/artifacts
         
 
