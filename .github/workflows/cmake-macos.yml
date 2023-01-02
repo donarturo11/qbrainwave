@@ -50,40 +50,14 @@ jobs:
     
     - name: Install QT
       run: |
-           echo "QTPATH=\$HOME/Qt6/" >> ~/.bashrc-aqt
-           echo "QT_VERSION=6.4.0" >> ~/.bashrc-aqt
-           echo "QT_MACOS=\$QT_PATH/\$QT_VERSION/macos" ~/.bashrc-aqt
-           echo "source ~/.bashrc-aqt" >> ~/.bashrc
-           source ~/.bashrc
            pip3 install aqtinstall
-           aqt install-qt -O "$QT_PATH" mac desktop 6.4.0
-           aqt install-src -O "$QT_PATH" mac "$QT_VERSION" --archives qtbase qtconnectivity # Contains macdeployqt
-           aqt install-tool -O "$QT_PATH" mac tools_cmake
-           aqt install-tool -O "$QT_PATH" mac desktop tools_ninja
-           cmake -S "$QT_MACOS/../Src/qtbase" -G Ninja -B $QT_MACOS/../Src/qtbase-build \
-                -DQT_FEATURE_macdeployqt=ON -DQT_FEATURE_network=ON -DQT_FEATURE_gui=OFF \
-                -DQT_FEATURE_concurrent=OFF -DQT_FEATURE_sql=OFF -DQT_FEATURE_dbus=OFF \
-                -DQT_FEATURE_testlib=OFF -DQT_FEATURE_printsupport=OFF -DQT_FEATURE_androiddeployqt=OFF \
-                -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=$QT_MACOS
-           cmake --build $QT_MACOS/../Src/qtbase-build
-           cmake --install $QT_MACOS/../Src/qtbase-build
-           cmake -S "$QT_MACOS/../Src/qtconnectivity" -G Ninja -B $QT_MACOS/../Src/qtconnectivity-build \
-                -DQT_FEATURE_macdeployqt=ON -DQT_FEATURE_network=ON -DQT_FEATURE_gui=OFF \
-                -DQT_FEATURE_concurrent=OFF -DQT_FEATURE_sql=OFF -DQT_FEATURE_dbus=OFF \
-                -DQT_FEATURE_testlib=OFF -DQT_FEATURE_printsupport=OFF -DQT_FEATURE_androiddeployqt=OFF \
-                -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=$QT_MACOS
-           cmake --build $QT_MACOS/../Src/qtconnectivity-build
-           cmake --install $QT_MACOS/../Src/qtconnectivity-build
-
-
+           aqt install-qt -O ~/Qt mac desktop 6.4.0 -m qtbase qtconnectivity
            
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: |
-           source ~/.bashrc
-           echo "QT_MACOS=$QT_MACOS"
-           ${QT_MACOS}/bin/qt-cmake -B ${{github.workspace}}/build \
+           ~/Qt/6.4.0/macos/bin/qt-cmake -B ${{github.workspace}}/build \
                  -DCMAKE_INSTALL_PREFIX=qbrainwave.app \
                  -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
                  -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} 
@@ -91,17 +65,13 @@ jobs:
     - name: Build
       # Build your program with the given configuration
       run: |
-           source ~/.bashrc
-           echo "Github workspace=${{github.workspace}}"
-           echo "PWD=${PWD}"
            cd ${{github.workspace}}/build
            make
 
     - name: Build Package
       run: |
-           source ~/.bashrc
            cd ${{github.workspace}}/build
-           ${QT_MACOS}/bin/macdeployqt qbrainwave.app || echo "Macdeploy FAILED"
+           ~/Qt/6.4.0/macos/bin/macdeployqt qbrainwave.app || echo "Macdeploy FAILED"
            file qbrainwave/Contents/MacOS/qbrainwave || echo "No such file"
            
     - name: Prepare Artifact
