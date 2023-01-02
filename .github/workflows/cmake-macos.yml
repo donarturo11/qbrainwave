@@ -1,21 +1,9 @@
 name: Build MacOS Monterey
 
 on:
-  workflow_dispatch:
-    inputs:
-      debug_enabled:
-        type: boolean
-        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'     
-        required: false
-        default: false
-      tags:
-        description: 'Test scenario tags'
-        required: true 
-        type: string  
   push:
     branches:
        - main
-       - ci-macos
   pull_request:
     branches: [ main ]
 
@@ -33,13 +21,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
-#    - name: Setup tmate session
-#      uses: mxschmitt/action-tmate@v3
-#      with:
-#          limit-access-to-actor: true
-#          if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
-#       timeout-minutes: 60
+
       
     - name: Prepare environment
       run: |
@@ -80,19 +62,10 @@ jobs:
            cd ${{github.workspace}}/build
            cp -Rv qbrainwave.app ~/artifacts/qbrainwave.app
 
-
     - name: Upload tuningTrainer-mac
       uses: actions/upload-artifact@v3.0.0
       with:
         name: qbrainwave-macos-universal
         path: ~/artifacts
-    
-            
-#    - name: Setup tmate session
-#      uses: mxschmitt/action-tmate@v3
-#      if: ${{ failure() }}
-#      with:
-#          limit-access-to-actor: true
-          #install-dependencies: false
-#      timeout-minutes: 60        
+      
         
