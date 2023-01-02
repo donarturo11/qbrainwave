@@ -51,7 +51,7 @@ jobs:
     - name: Install QT
       run: |
            pip3 install aqtinstall
-           aqt install-qt -O ~/Qt mac desktop 6.4.0 -m qtbase
+           aqt install-qt -O ~/Qt mac desktop 6.4.0
            aqt install-qt -O ~/Qt mac desktop 6.4.0 -m qtconnectivity
            
     - name: Configure CMake
@@ -88,11 +88,11 @@ jobs:
         path: ~/artifacts
     
             
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-      if: ${{ failure() }}
-      with:
-          limit-access-to-actor: true
+#    - name: Setup tmate session
+#      uses: mxschmitt/action-tmate@v3
+#      if: ${{ failure() }}
+#      with:
+#          limit-access-to-actor: true
           #install-dependencies: false
 #      timeout-minutes: 60        
         
