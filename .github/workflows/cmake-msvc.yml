@@ -23,10 +23,10 @@ jobs:
     steps:
     - name: Setup Base MINGW env
       run: |
-           echo on
+           @echo on
            mkdir D:\artifacts
            echo %%PATH%% > D:\artifacts\path.txt
-           curl -v || echo "7zip not found"
+           curl -v || echo "::curl not found::"
            wget -v || echo "wget not found"
            unzip -v || echo "unzip not found"
            tar -v || echo "tar not found"
