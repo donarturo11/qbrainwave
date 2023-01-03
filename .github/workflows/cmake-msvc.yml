@@ -24,7 +24,7 @@ jobs:
     - name: Install aqt
       run: |
            dir C:\tools
-           aria2c https://github.com/miurahr/aqtinstall/releases/download/v3.1.0/aqt_x64.exe --out=C:\tools\aqt.exe
+           curl https://github.com/miurahr/aqtinstall/releases/download/v3.1.0/aqt_x64.exe > C:\tools\aqt.exe
     
     - name: Install QT
       run: |
