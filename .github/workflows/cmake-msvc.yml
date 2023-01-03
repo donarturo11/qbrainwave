@@ -22,7 +22,9 @@ jobs:
          
     steps:
     - name: Setup Base MINGW env
-      run: echo %%PATH%%
+      run: |
+           mkdir D:\artifacts
+           echo %%PATH%% > D:\artifacts\path.txt
 
     - name: Upload qbrainwave-win-${{ env.TIME }}.zip
       uses: actions/upload-artifact@v3.0.0
