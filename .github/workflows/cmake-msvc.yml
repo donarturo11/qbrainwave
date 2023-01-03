@@ -24,15 +24,15 @@ jobs:
     - name: Setup Base MINGW env
       run: |
            mkdir D:\artifacts
-           echo :: %PATH% ::
-           curl -v || echo ":: curl not found ::"
-           wget -v || echo ":: wget not found ::"
-           unzip -v || echo ":: unzip not found ::"
-           tar -v || echo ":: tar not found ::"
-           pip -V || echo ":: pip not found ::"
-           python -V || echo ":: python not found ::"
-           cmake --version || echo ":: Cmake not found ::"
-           7z -v || echo ":: 7zip not found ::"
+           Write-Output  ":: $env:PATH ::"
+           try {  curl --version } throw { Write-Output ":: curl not found ::" }
+           try {  wget --version } throw { Write-Output ":: wget not found ::"}
+           try {  unzip --version } throw { Write-Output ":: unzip not found ::"}
+           try {  tar --version } throw { Write-Output ":: tar not found ::"}
+           try {  pip --version } throw { Write-Output ":: pip not found ::"}
+           try {  python --version } throw { Write-Output ":: python not found ::"}
+           try {  cmake --version } throw { Write-Output ":: Cmake not found ::"}
+           try {  7z i } throw { Write-Output ":: 7zip not found ::"}
 
     - name: Upload qbrainwave-win-${{ env.TIME }}.zip
       uses: actions/upload-artifact@v3.0.0
