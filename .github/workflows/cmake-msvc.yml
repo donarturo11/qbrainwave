@@ -24,9 +24,9 @@ jobs:
     - name: Setup environment
       run: |
            pip install aqt
-           aqt install-qt -O C:\Qt windows desktop 6.4.0 win64_msvc2019_64
-           aqt install-qt -O C:\Qt windows desktop 6.4.0 win64_msvc2019_64 -m qtconnectivity
-           aqt install-tool -O C:\Qt windows desktop tools_cmake
+           python -m aqt install-qt -O C:\Qt windows desktop 6.4.0 win64_msvc2019_64
+           python -m aqt install-qt -O C:\Qt windows desktop 6.4.0 win64_msvc2019_64 -m qtconnectivity
+           python -m aqt install-tool -O C:\Qt windows desktop tools_cmake
 
     - name: Build qbrainwave
       # Build your program with the given configuration
