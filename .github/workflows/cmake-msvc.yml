@@ -28,9 +28,9 @@ jobs:
     
     - name: Install QT
       run: |
-           aqt install-qt -O C:\Qt windows desktop 6.4.0 win64_msvc2019_64
-           aqt install-qt -O C:\Qt windows desktop 6.4.0 win64_msvc2019_64 -m qtconnectivity
-           aqt install-tool -O C:\Qt windows desktop tools_cmake
+           C:\tools\aqt.exe install-qt -O C:\Qt windows desktop 6.4.0 win64_msvc2019_64
+           C:\tools\aqt.exe install-qt -O C:\Qt windows desktop 6.4.0 win64_msvc2019_64 -m qtconnectivity
+           C:\tools\aqt.exe install-tool -O C:\Qt windows desktop tools_cmake
            
     - name: Build qbrainwave
       # Build your program with the given configuration
