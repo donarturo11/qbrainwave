@@ -23,21 +23,24 @@ jobs:
     steps:
     - name: Install aqt
       run: |
-           dir C:\tools
-           curl https://github.com/miurahr/aqtinstall/releases/download/v3.1.0/aqt_x64.exe > C:\tools\aqt.exe
+           try { mkdir D:\tools } catch { Write-Output ::Already exists:: }
+           dir D:\tools
+           curl https://github.com/miurahr/aqtinstall/releases/download/v3.1.0/aqt_x64.exe > D:\tools\aqt.exe
+           D:\tools\aqt -h
     
     - name: Install QT
       run: |
-           C:\tools\aqt.exe install-qt -O C:\Qt windows desktop 6.4.0 win64_msvc2019_64
-           C:\tools\aqt.exe install-qt -O C:\Qt windows desktop 6.4.0 win64_msvc2019_64 -m qtconnectivity
-           C:\tools\aqt.exe install-tool -O C:\Qt windows desktop tools_cmake
+           try { mkdir D:\Qt } catch { Write-Output ::Already exists:: }
+           D:\tools\aqt.exe install-qt -O D:\Qt windows desktop 6.4.0 win64_msvc2019_64
+           D:\tools\aqt.exe install-qt -O D:\Qt windows desktop 6.4.0 win64_msvc2019_64 -m qtconnectivity
+           D:\tools\aqt.exe install-tool -O D:\Qt windows desktop tools_cmake
            
     - name: Build qbrainwave
       # Build your program with the given configuration
       run: |
            Write-Output Github workspace: ${{github.workspace}}
            cd ${{github.workspace}}\..
-           cmake -B ${{github.workspace}}\build -S ${{github.workspace}} -DCMAKE_PREFIX_PATH=C:\Qt\6.4.0\msvc2019_64\
+           cmake -B ${{github.workspace}}\build -S ${{github.workspace}} -DCMAKE_PREFIX_PATH=D:\Qt\6.4.0\msvc2019_64\
            cmake --build ${{github.workspace}}\build --config Release
     
     - name: Deploy qbrainwave
@@ -45,7 +48,7 @@ jobs:
       run: |           
            mkdir D:\artifacts\qbrainwave-win\
            copy ${{github.workspace}}\build\Release\*.exe D:\artifacts\qbrainwave-win\
-           C:\Qt\6.4.0\msvc2019_64\bin\windeployqt D:\artifacts\qbrainwave-win\
+           D:\Qt\6.4.0\msvc2019_64\bin\windeployqt D:\artifacts\qbrainwave-win\
 
     - name: Upload qbrainwave-win-msvc-Release.zip
       uses: actions/upload-artifact@v3.0.0
