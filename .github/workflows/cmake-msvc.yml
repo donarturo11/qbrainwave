@@ -23,7 +23,6 @@ jobs:
     steps:
     - name: Setup Base MINGW env
       run: |
-           @Echo On
            mkdir D:\artifacts
            echo :: %PATH% ::
            curl -v || echo ":: curl not found ::"
