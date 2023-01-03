@@ -25,14 +25,14 @@ jobs:
       run: |
            mkdir D:\artifacts
            Write-Output  ":: $env:PATH ::"
-           try {  curl --version } throw { Write-Output ":: curl not found ::" }
-           try {  wget --version } throw { Write-Output ":: wget not found ::"}
-           try {  unzip --version } throw { Write-Output ":: unzip not found ::"}
-           try {  tar --version } throw { Write-Output ":: tar not found ::"}
-           try {  pip --version } throw { Write-Output ":: pip not found ::"}
-           try {  python --version } throw { Write-Output ":: python not found ::"}
-           try {  cmake --version } throw { Write-Output ":: Cmake not found ::"}
-           try {  7z i } throw { Write-Output ":: 7zip not found ::"}
+           try {  curl --version } catch { Write-Output ":: curl not found ::" }
+           try {  wget --version } catch { Write-Output ":: wget not found ::"}
+           try {  unzip --version } catch { Write-Output ":: unzip not found ::"}
+           try {  tar --version } catch { Write-Output ":: tar not found ::"}
+           try {  pip --version } catch { Write-Output ":: pip not found ::"}
+           try {  python --version } catch { Write-Output ":: python not found ::"}
+           try {  cmake --version } catch { Write-Output ":: Cmake not found ::"}
+           try {  7z i } catch { Write-Output ":: 7zip not found ::"}
 
     - name: Upload qbrainwave-win-${{ env.TIME }}.zip
       uses: actions/upload-artifact@v3.0.0
