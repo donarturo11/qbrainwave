@@ -30,13 +30,15 @@ jobs:
         msystem: MINGW64
         update: true
 
-    - name: Setup MINGW env vars
+    - name: Setup MINGW Environment
       run: |
 
            TIME=$(date +%Y%d%m-%H%M%S)
-           MINGW_ROOT="$(cd /; pwd -W | sed 's/[A-Z]/\L&/g' | sed "s/://g")"
+           MINGW_ROOT="/$(cd /; pwd -W | sed 's/[A-Z]/\L&/g' | sed "s/://g")"
            echo "MINGW_ROOT=${MINGW_ROOT}" >> $GITHUB_ENV
            echo "MINGW_WORKSPACE=$(cygpath -m "${{github.workspace}}")" >> $GITHUB_ENV
+           [[ -x /d/artifacts ]]
+           mkdir /d/artifacts
            
     - name: Print MINGW env vars
       run: |
@@ -64,7 +66,7 @@ jobs:
     - name: Build qbrainwave
       # Build your program with the given configuration
       run: |
-           find ${MINGW_WORKSPACE} > /d/artifacts/mingw-git-workspace
+           [[ /d/artifacts ]]; find ${MINGW_WORKSPACE} > /d/artifacts/mingw-git-workspace.txt
            cd ${{github.workspace}}
            cmake \
               -B ${MINGW_WORKSPACE/build} \
