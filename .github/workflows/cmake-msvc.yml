@@ -24,16 +24,13 @@ jobs:
     - name: Install aqt
       run: |
            dir C:\tools
-           wget https://github.com/miurahr/aqtinstall/releases/download/v3.1.0/aqt_x64.exe -O C:\tools\aqt.exe
-           aqt install-qt -O C:\Qt windows desktop 6.4.0 win64_msvc2019_64
-           aqt install-qt -O C:\Qt windows desktop 6.4.0 win64_msvc2019_64 -m qtconnectivity
-           aqt install-tool -O C:\Qt windows desktop tools_cmake
+           aria2c https://github.com/miurahr/aqtinstall/releases/download/v3.1.0/aqt_x64.exe --out=C:\tools\aqt.exe
     
     - name: Install QT
       run: |
-           python -m aqt install-qt -O C:\Qt windows desktop 6.4.0 win64_msvc2019_64
-           python -m aqt install-qt -O C:\Qt windows desktop 6.4.0 win64_msvc2019_64 -m qtconnectivity
-           python -m aqt install-tool -O C:\Qt windows desktop tools_cmake
+           aqt install-qt -O C:\Qt windows desktop 6.4.0 win64_msvc2019_64
+           aqt install-qt -O C:\Qt windows desktop 6.4.0 win64_msvc2019_64 -m qtconnectivity
+           aqt install-tool -O C:\Qt windows desktop tools_cmake
            
     - name: Build qbrainwave
       # Build your program with the given configuration
