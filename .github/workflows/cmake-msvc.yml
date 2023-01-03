@@ -1,0 +1,31 @@
+name: Build Windows
+
+on:
+  push:
+    branches:
+       - main
+       - 0000-fix-workflows
+  pull_request:
+    branches: [ main ]
+
+env:
+  #  Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+  TIME: 0000
+
+jobs:
+  build-windows:
+    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
+    # You can convert this to a matrix build if you need cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: windows-latest
+         
+    steps:
+    - name: Setup Base MINGW env
+      run: echo %%PATH%%
+
+    - name: Upload qbrainwave-win-${{ env.TIME }}.zip
+      uses: actions/upload-artifact@v3.0.0
+      with:
+        name: qbrainwave-win-${{ env.TIME }}
+        path: D:\artifacts\
