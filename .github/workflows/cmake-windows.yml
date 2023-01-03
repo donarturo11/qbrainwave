@@ -4,6 +4,7 @@ on:
   push:
     branches:
        - main
+       - 0000-fix-workflows
   pull_request:
     branches: [ main ]
 
@@ -31,17 +32,19 @@ jobs:
 
     - name: Setup MINGW env vars
       run: |
-           echo "MINGW_RUNNER_TEMP=${RUNNER_TEMP//\\//}" >> $GITHUB_ENV
-           echo "MINGW_ROOT=$(cd /; pwd -W)" >> $GITHUB_ENV
-           echo "MINGW_GIT_WORKSPACE=${GITHUB_WORKSPACE//\\//}" >> $GITHUB_ENV
+
            TIME=$(date +%Y%d%m-%H%M%S)
+           MINGW_ROOT="$(cd /; pwd -W | sed 's/[A-Z]/\L&/g' | sed "s/://g")"
+           echo "MINGW_ROOT=${MINGW_ROOT}" >> $GITHUB_ENV
+           echo "MINGW_WORKSPACE=$(cygpath -m "${{github.workspace}}")" >> $GITHUB_ENV
            
     - name: Print MINGW env vars
       run: |
+
            echo "MINGW_ROOT = ${{env.MINGW_ROOT}}"
-           echo "MINGW_RUNNER_TEMP = ${{env.MINGW_RUNNER_TEMP}}"
-           echo "Github workspace = $MINGW_GIT_WORKSPACE"
            echo "github.workspace=${{github.workspace}}"
+           echo "MINGW_WORKSPACE=${{env.MINGW_WORKSPACE}}"
+           echo "CYG HOME="
            
     - name: Setup MinGW Build environment
       uses: msys2/setup-msys2@v2
@@ -61,11 +64,11 @@ jobs:
     - name: Build qbrainwave
       # Build your program with the given configuration
       run: |
-           find ${MINGW_GIT_WORKSPACE} > /d/artifacts/mingw-git-workspace
+           find ${MINGW_WORKSPACE} > /d/artifacts/mingw-git-workspace
            cd ${{github.workspace}}
            cmake \
-              -B ${MINGW_GIT_WORKSPACE/build} \
-              -S ${MINGW_GIT_WORKSPACE} \
+              -B ${MINGW_WORKSPACE/build} \
+              -S ${MINGW_WORKSPACE} \
               -G "Unix Makefiles" \
               -DCMAKE_INSTALL_PREFIX=/d/artifacts/qbrainwave-win \
               -DCMAKE_CXX_FLAGS="-static -L /mingw64/lib/"
@@ -73,7 +76,7 @@ jobs:
     
     - name: Package qbrainwave
       run: |
-           cmake --install ${MINGW_GIT_WORKSPACE/build} --prefix /d/artifacts/qbrainwave-win
+           cmake --install ${MINGW_WORKSPACE/build} --prefix /d/artifacts/qbrainwave-win
 
     - name: Add timestamp
       run: |
