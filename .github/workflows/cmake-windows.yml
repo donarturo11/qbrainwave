@@ -4,7 +4,7 @@ on:
   push:
     branches:
        - main
-       - 0000-fix-workflows
+#       - 0000-fix-workflows
   pull_request:
     branches: [ main ]
 
