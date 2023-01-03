@@ -21,21 +21,30 @@ jobs:
     runs-on: windows-latest
          
     steps:
-    - name: Setup Base MINGW env
+    - name: Setup environment
       run: |
-           mkdir D:\artifacts
-           Write-Output  ":: $env:PATH ::"
-           try {  curl --version } catch { Write-Output ":: curl not found ::" }
-           try {  wget --version } catch { Write-Output ":: wget not found ::"}
-           try {  unzip --version } catch { Write-Output ":: unzip not found ::"}
-           try {  tar --version } catch { Write-Output ":: tar not found ::"}
-           try {  pip --version } catch { Write-Output ":: pip not found ::"}
-           try {  python --version } catch { Write-Output ":: python not found ::"}
-           try {  cmake --version } catch { Write-Output ":: Cmake not found ::"}
-           try {  7z i } catch { Write-Output ":: 7zip not found ::"}
+           pip install aqt
+           aqt install-qt -O C:\Qt windows desktop 6.4.0 win64_msvc2019_64
+           aqt install-qt -O C:\Qt windows desktop 6.4.0 win64_msvc2019_64 -m qtconnectivity
+           aqt install-tool -O C:\Qt windows desktop tools_cmake
 
-    - name: Upload qbrainwave-win-${{ env.TIME }}.zip
+    - name: Build qbrainwave
+      # Build your program with the given configuration
+      run: |
+           Write-Output Github workspace: ${{github.workspace}}
+           cd ${{github.workspace}}\..
+           cmake -B ${{github.workspace}}\build -S ${{github.workspace}} -DCMAKE_PREFIX_PATH=C:\Qt\6.4.0\msvc2019_64\
+           cmake --build ${{github.workspace}}\build --config Release
+    
+    - name: Deploy qbrainwave
+      # Build your program with the given configuration
+      run: |           
+           mkdir D:\artifacts\qbrainwave-win\
+           copy ${{github.workspace}}\build\Release\*.exe D:\artifacts\qbrainwave-win\
+           C:\Qt\6.4.0\msvc2019_64\bin\windeployqt D:\artifacts\qbrainwave-win\
+
+    - name: Upload qbrainwave-win-msvc-Release.zip
       uses: actions/upload-artifact@v3.0.0
       with:
-        name: qbrainwave-win-${{ env.TIME }}
+        name: qbrainwave-win-msvc-Release
         path: D:\artifacts\
