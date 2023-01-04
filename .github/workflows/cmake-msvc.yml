@@ -21,6 +21,12 @@ jobs:
     runs-on: windows-latest
          
     steps:
+    - name: Check dirs
+      run: |
+           dir
+           tree ${{github.workspace}}
+           tree ..
+
     - name: Upgrade pip
       run: |
            python -m pip install -U pip
@@ -39,13 +45,6 @@ jobs:
     - name: Build qbrainwave
       # Build your program with the given configuration
       run: |
-           $dir1=dir
-           $tree1=tree ${{github.workspace}}
-           tree2=tree ..
-           Write-Output ":: Github workspace: ${{github.workspace}} ::"
-           Write-Output ":: pwd=$pwd ::"
-           Write-Output ":: tree workspace:`n$tree1 ::"
-           Write-Output ":: tree ..:`n$tree2 ::"
            D:\Qt\Tools\CMake_64\bin\cmake.exe -B ${{github.workspace}}\build -S ${{github.workspace}} -DCMAKE_PREFIX_PATH=D:\Qt\6.4.0\msvc2019_64\
            D:\Qt\Tools\CMake_64\bin\cmake.exe --build ${{github.workspace}}\build --config Release
     
