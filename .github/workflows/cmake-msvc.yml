@@ -39,10 +39,10 @@ jobs:
     - name: Build qbrainwave
       # Build your program with the given configuration
       run: |
-           Write-Output Github workspace: ${{github.workspace}}
+           Write-Output ":: Github workspace: ${{github.workspace}} ::"
            cd ${{github.workspace}}\..
-           cmake -B ${{github.workspace}}\build -S ${{github.workspace}} -DCMAKE_PREFIX_PATH=D:\Qt\6.4.0\msvc2019_64\
-           cmake --build ${{github.workspace}}\build --config Release
+           D:\Qt\Tools\CMake_64\bin\cmake.exe -B ${{github.workspace}}\build -S ${{github.workspace}} -DCMAKE_PREFIX_PATH=D:\Qt\6.4.0\msvc2019_64\
+           D:\Qt\Tools\CMake_64\bin\cmake.exe --build ${{github.workspace}}\build --config Release
     
     - name: Deploy qbrainwave
       # Build your program with the given configuration
