@@ -2,7 +2,9 @@ name: Build Linux
 
 on:
   push:
-    branches: [ main ]
+    branches:
+       - main
+       - 0000-fix-workflows
   pull_request:
     branches: [ main ]
 
