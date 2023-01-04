@@ -25,8 +25,9 @@ jobs:
       run: |
            try { mkdir D:\tools } catch { Write-Output ::Already exists:: }
            dir D:\tools
-           curl https://github.com/miurahr/aqtinstall/releases/download/v3.1.0/aqt_x64.exe > D:\tools\aqt.exe
-           D:\tools\aqt -h
+           curl https://github.com/miurahr/aqtinstall/releases/download/v3.1.0/aqt_x64.exe > D:\tools\aqt_x64.exe
+           curl https://github.com/miurahr/aqtinstall/releases/download/v3.1.0/aqt_x86.exe > D:\tools\aqt_x86.exe
+           try { D:\tools\aqt_x64 -h } catch { D:\tools\aqt_x86 -h }
     
     - name: Install QT
       run: |
