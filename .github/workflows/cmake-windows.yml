@@ -4,14 +4,13 @@ on:
   push:
     branches:
        - main
-#       - 0000-fix-workflows
+       - 0000-fix-workflows
   pull_request:
     branches: [ main ]
 
 env:
   #  Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
-  TIME: 0000
 
 jobs:
   build-windows:
@@ -19,76 +18,41 @@ jobs:
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: windows-latest
-    defaults:
-      run:
-        shell: msys2 {0}
-
+         
     steps:
-    - name: Setup Base MINGW env
-      uses: msys2/setup-msys2@v2
-      with:
-        msystem: MINGW64
-        update: true
-
-    - name: Setup MINGW Environment
-      run: |
-
-           TIME=$(date +%Y%d%m-%H%M%S)
-           MINGW_ROOT="/$(cd /; pwd -W | sed 's/[A-Z]/\L&/g' | sed "s/://g")"
-           echo "MINGW_ROOT=${MINGW_ROOT}" >> $GITHUB_ENV
-           echo "MINGW_WORKSPACE=$(cygpath -m "${{github.workspace}}")" >> $GITHUB_ENV
-           [[ -x /d/artifacts ]]
-           mkdir /d/artifacts
-           
-    - name: Print MINGW env vars
-      run: |
-
-           echo "MINGW_ROOT = ${{env.MINGW_ROOT}}"
-           echo "github.workspace=${{github.workspace}}"
-           echo "MINGW_WORKSPACE=${{env.MINGW_WORKSPACE}}"
-           echo "CYG HOME="
-           
-    - name: Setup MinGW Build environment
-      uses: msys2/setup-msys2@v2
-      with:
-        msystem: MINGW64
-        install: base base-devel tree autoconf automake-wrapper dos2unix zip git mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-pcre
-    
     - name: Git checkout
       uses: actions/checkout@v3
-      
-    - name: Install qt6
-      uses: msys2/setup-msys2@v2
-      with:
-         msystem: MINGW64
-         install: mingw-w64-x86_64-qt6
 
+    - name: Upgrade pip
+      run: |
+           python -m pip install -U pip
+
+    - name: Install aqtinstall
+      run: |
+           pip install aqtinstall
+    
+    - name: Install QT
+      run: |
+           try { mkdir D:\Qt } catch { Write-Output ::Already exists:: }
+           python -m aqt install-qt -O D:\Qt windows desktop 6.4.0 win64_msvc2019_64
+           python -m aqt install-qt -O D:\Qt windows desktop 6.4.0 win64_msvc2019_64 -m qtconnectivity
+           python -m aqt install-tool -O D:\Qt windows desktop tools_cmake
+           
     - name: Build qbrainwave
       # Build your program with the given configuration
       run: |
-           [[ /d/artifacts ]]; find ${MINGW_WORKSPACE} > /d/artifacts/mingw-git-workspace.txt
-           cd ${{github.workspace}}
-           cmake \
-              -B ${MINGW_WORKSPACE/build} \
-              -S ${MINGW_WORKSPACE} \
-              -G "Unix Makefiles" \
-              -DCMAKE_INSTALL_PREFIX=/d/artifacts/qbrainwave-win \
-              -DCMAKE_CXX_FLAGS="-static -L /mingw64/lib/"
-           cmake --build ${MINGW_GIT_WORKSPACE/build}
+           cmake.exe -B ${{github.workspace}}\build -S ${{github.workspace}} -DCMAKE_PREFIX_PATH=D:\Qt\6.4.0\msvc2019_64\
+           cmake.exe --build ${{github.workspace}}\build --config Release
     
-    - name: Package qbrainwave
-      run: |
-           cmake --install ${MINGW_WORKSPACE/build} --prefix /d/artifacts/qbrainwave-win
+    - name: Deploy qbrainwave
+      # Build your program with the given configuration
+      run: |           
+           mkdir D:\artifacts\qbrainwave-win\
+           copy ${{github.workspace}}\build\Release\*.exe D:\artifacts\qbrainwave-win\
+           D:\Qt\6.4.0\msvc2019_64\bin\windeployqt D:\artifacts\qbrainwave-win\
 
-    - name: Add timestamp
-      run: |
-           cd /d/artifacts/
-           TIME=$(date +%Y%m%d-%H%M%S || echo "latest")
-           echo "TIME=$TIME" >> $GITHUB_ENV
-           mv qbrainwave-win qbrainwave-win-$TIME
-
-    - name: Upload qbrainwave-win-${{ env.TIME }}.zip
+    - name: Upload qbrainwave-win-msvc-Release.zip
       uses: actions/upload-artifact@v3.0.0
       with:
-        name: qbrainwave-win-${{ env.TIME }}
+        name: qbrainwave-win-msvc-Release
         path: D:\artifacts\
