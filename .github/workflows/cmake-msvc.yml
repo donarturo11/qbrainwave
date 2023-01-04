@@ -23,7 +23,7 @@ jobs:
     steps:
     - name: Upgrade pip
       run: |
-           python pip install -U pip
+           python -m pip install -U pip
 
     - name: Install aqt
       run: |
