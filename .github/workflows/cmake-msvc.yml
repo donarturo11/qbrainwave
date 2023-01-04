@@ -21,20 +21,20 @@ jobs:
     runs-on: windows-latest
          
     steps:
+    - name: Upgrade pip
+      run: |
+           python pip install -U pip
+
     - name: Install aqt
       run: |
-           try { mkdir D:\tools } catch { Write-Output ::Already exists:: }
-           dir D:\tools
-           curl https://github.com/miurahr/aqtinstall/releases/download/v3.1.0/aqt_x64.exe > D:\tools\aqt_x64.exe
-           curl https://github.com/miurahr/aqtinstall/releases/download/v3.1.0/aqt_x86.exe > D:\tools\aqt_x86.exe
-           try { D:\tools\aqt_x64 -h } catch { D:\tools\aqt_x86 -h }
+           pip install pyqt6 aqt
     
     - name: Install QT
       run: |
            try { mkdir D:\Qt } catch { Write-Output ::Already exists:: }
-           D:\tools\aqt.exe install-qt -O D:\Qt windows desktop 6.4.0 win64_msvc2019_64
-           D:\tools\aqt.exe install-qt -O D:\Qt windows desktop 6.4.0 win64_msvc2019_64 -m qtconnectivity
-           D:\tools\aqt.exe install-tool -O D:\Qt windows desktop tools_cmake
+           python -m aqt install-qt -O D:\Qt windows desktop 6.4.0 win64_msvc2019_64
+           python -m aqt install-qt -O D:\Qt windows desktop 6.4.0 win64_msvc2019_64 -m qtconnectivity
+           python -m aqt install-tool -O D:\Qt windows desktop tools_cmake
            
     - name: Build qbrainwave
       # Build your program with the given configuration
