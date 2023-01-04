@@ -25,9 +25,9 @@ jobs:
       run: |
            python -m pip install -U pip
 
-    - name: Install aqt
+    - name: Install aqtinstall
       run: |
-           pip install pyqt6 aqt
+           pip install aqtinstall
     
     - name: Install QT
       run: |
